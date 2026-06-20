@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { GenreStat, RatingStat } from "../types";
 
 interface DashboardProps {
@@ -9,8 +9,6 @@ interface DashboardProps {
   onGenreClick?: (genre: string) => void;
   onRatingClick?: (rating: string) => void;
 }
-
-const COLORS = ['#00f2fe', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1', '#4facfe'];
 
 export default function Dashboard({ scanPaths, onGenreClick, onRatingClick }: DashboardProps) {
   const { t } = useTranslation();

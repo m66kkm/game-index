@@ -2,8 +2,7 @@ import {
   Monitor,
   Sparkles,
   HardDrive,
-  Layers,
-  List
+  Layers
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
