@@ -15,6 +15,17 @@
 - 🎨 **顶级暗黑视觉美学**：精心设计的 Glassmorphism (毛玻璃) 风格，配以炫酷的霓虹赛博渐变光效，给你顶尖的数字展厅体验。
 - ⚙️ **高性能架构**：基于 Rust + Tauri 的轻量级后端系统，SQLite 闪电入库。
 
+## 📸 界面预览 (Screenshots)
+
+### 系统首页 (数据中心与统计看板)
+![Dashboard](assets/dashboard.png)
+
+### 海报墙 (沉浸式游戏导览)
+![Poster Wall](assets/poster_wall.png)
+
+### 游戏系列与续作 (智能聚合归类)
+![Franchises](assets/franchises.png)
+
 ## 🛠️ 技术栈 (Tech Stack)
 
 - **前端 UI**: React 18, TypeScript, Vite

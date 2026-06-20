@@ -15,6 +15,17 @@
 - 🎨 **Premium Dark Visual Aesthetics**: Carefully designed Glassmorphism style paired with cool neon cyber gradient lighting effects, providing you with a top-tier digital showroom experience.
 - ⚙️ **High-Performance Architecture**: Built on a lightweight backend using Rust + Tauri, with lightning-fast SQLite storage.
 
+## 📸 Screenshots
+
+### System Dashboard (Storage & Statistical Overview)
+![Dashboard](assets/dashboard.png)
+
+### Poster Wall (Immersive Game Navigation)
+![Poster Wall](assets/poster_wall.png)
+
+### Franchises & Sequels (Smart Grouping)
+![Franchises](assets/franchises.png)
+
 ## 🛠️ Tech Stack
 
 - **Frontend UI**: React 18, TypeScript, Vite
