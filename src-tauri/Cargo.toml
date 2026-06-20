@@ -1,0 +1,25 @@
+[package]
+name = "game-index"
+version = "1.0.0"
+description = "Tauri local game index application"
+edition = "2021"
+
+[lib]
+name = "game_index_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rusqlite = { version = "0.31", features = ["bundled"] }
+reqwest = { version = "0.12", features = ["json", "blocking"] }
+tokio = { version = "1", features = ["full"] }
+regex = "1.10"
+lazy_static = "1.4"
+urlencoding = "2.1"
+chrono = { version = "0.4", features = ["serde"] }
+tauri-plugin-dialog = "2"

@@ -1,0 +1,20 @@
+
+# Game Index specifics
+games.db
+steam_cache.json
+covers/
+test-steam.js
+
+
+target/
+src-tauri/target/
+dist/
+node_modules/
+src-tauri/covers/
+
+
+target/
+src-tauri/target/
+dist/
+node_modules/
+
