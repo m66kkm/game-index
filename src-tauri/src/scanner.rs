@@ -480,13 +480,28 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                                                                 if let Some(total) = qs.get("total_reviews").and_then(|t| t.as_i64()) {
                                                                     if total > 0 {
                                                                         entry.total_reviews = Some(total);
-                                                                        entry.review_score_desc = qs.get("review_score_desc").and_then(|s| s.as_str()).map(String::from);
+                                                                        let raw_desc = qs.get("review_score_desc").and_then(|s| s.as_str()).map(String::from);
+                                                                        if let Some(desc) = raw_desc {
+                                                                            if desc.is_empty() 
+                                                                               || desc.contains("篇用户评测") 
+                                                                               || desc.contains("user reviews") 
+                                                                               || desc.contains("Need more user reviews")
+                                                                               || desc.contains("不需要测评") 
+                                                                            {
+                                                                                entry.review_score_desc = Some("评价不可用".to_string());
+                                                                            } else {
+                                                                                entry.review_score_desc = Some(desc);
+                                                                            }
+                                                                        } else {
+                                                                            entry.review_score_desc = Some("评价不可用".to_string());
+                                                                        }
+                                                                        
                                                                         if let Some(positive) = qs.get("total_positive").and_then(|p| p.as_i64()) {
                                                                             let percent = (positive as f64 / total as f64 * 100.0).round() as i64;
                                                                             entry.positive_percent = Some(percent);
                                                                         }
                                                                     } else {
-                                                                        entry.review_score_desc = Some("无用户评测".to_string());
+                                                                        entry.review_score_desc = Some("评价不可用".to_string());
                                                                         entry.total_reviews = Some(0);
                                                                         entry.positive_percent = Some(0);
                                                                     }

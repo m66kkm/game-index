@@ -136,6 +136,20 @@ pub fn init_db(conn: &Connection) -> Result<()> {
     // Add genres column if not exists (for existing databases)
     conn.execute("ALTER TABLE steam_cache ADD COLUMN genres TEXT", []).ok();
 
+    // Migrate existing invalid review descriptions to "评价不可用"
+    let _ = conn.execute(
+        "UPDATE steam_cache 
+         SET review_score_desc = '评价不可用' 
+         WHERE review_score_desc IS NULL 
+            OR review_score_desc = '' 
+            OR review_score_desc LIKE '%篇用户评测%' 
+            OR review_score_desc LIKE '%user reviews%' 
+            OR review_score_desc LIKE '%Need more user reviews%' 
+            OR review_score_desc LIKE '%不需要测评%' 
+            OR review_score_desc = '无用户评测'",
+        [],
+    );
+
     // 4. 配置表
     conn.execute(
         "CREATE TABLE IF NOT EXISTS config (
