@@ -177,7 +177,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
     let default_configs = vec![
         ("theme", "dark"),
         ("page_size", "50"),
-        ("installed_drives", "D:;E:"),
+        ("installed_drives", ""),
         ("exclude_folders", "System Volume Information;$Recycle.Bin;Recovery;Config.Msi;Documents and Settings;Program Files;Program Files (x86);Windows"),
         ("steam_api_delay_ms", "300"),
         ("steam_api_threads", "10"),
