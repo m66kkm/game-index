@@ -143,6 +143,12 @@ fn get_genre_stats_command(state: tauri::State<'_, db::DbState>) -> Result<Vec<d
 }
 
 #[tauri::command]
+fn get_rating_stats_command(state: tauri::State<'_, db::DbState>) -> Result<Vec<db::RatingStat>, String> {
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    db::get_rating_stats(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn open_game_folder_command(path: String) -> Result<(), String> {
     use std::process::Command;
     Command::new("explorer")
@@ -219,6 +225,7 @@ pub fn run() {
             clear_steam_cache_command,
             get_all_genres_command,
             get_genre_stats_command,
+            get_rating_stats_command,
         ])
         .run(tauri::generate_context!())
         .expect("运行 Tauri 应用时出错");

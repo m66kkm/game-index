@@ -702,6 +702,41 @@ pub fn get_genre_stats(conn: &Connection) -> Result<Vec<GenreStat>> {
     Ok(stats)
 }
 
+#[derive(serde::Serialize)]
+pub struct RatingStat {
+    pub name: String,
+    pub count: usize,
+}
+
+pub fn get_rating_stats(conn: &Connection) -> Result<Vec<RatingStat>> {
+    let mut stmt = conn.prepare(
+        "SELECT s.review_score_desc FROM games g 
+         JOIN steam_cache s ON g.base_name = s.base_name 
+         WHERE g.is_representative = 1 AND s.review_score_desc IS NOT NULL AND s.review_score_desc != ''"
+    )?;
+    
+    let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
+    
+    let mut counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    
+    for r in rows.flatten() {
+        let rating = r.trim().to_string();
+        if !rating.is_empty() 
+           && !rating.contains("篇用户评测") 
+           && !rating.contains("user reviews") 
+           && !rating.contains("Need more user reviews")
+           && !rating.contains("不需要测评") 
+        {
+            *counts.entry(rating).or_insert(0) += 1;
+        }
+    }
+    
+    let mut stats: Vec<RatingStat> = counts.into_iter().map(|(name, count)| RatingStat { name, count }).collect();
+    stats.sort_by(|a, b| b.count.cmp(&a.count));
+    
+    Ok(stats)
+}
+
 /// 插入一条扫描历史记录
 pub fn insert_scan_history(
     conn: &Connection,

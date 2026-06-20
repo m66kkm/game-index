@@ -48,6 +48,11 @@ export interface GenreStat {
   count: number;
 }
 
+export interface RatingStat {
+  name: string;
+  count: number;
+}
+
 export interface ProgressPayload {
   step: string;
   message: string;
