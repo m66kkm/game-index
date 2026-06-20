@@ -19,7 +19,6 @@ const TABS = [
   { id: "installed", icon: HardDrive, labelKey: "tabInstalled" },
   { id: "franchise", icon: Layers, labelKey: "tabFranchise" },
   { id: "duplicates", icon: Layers, labelKey: "tabDuplicates" },
-  { id: "all", icon: List, labelKey: "tabAll" },
 ];
 
 export default function TabNav({ activeTab, onTabChange }: TabNavProps) {

@@ -1,4 +1,4 @@
-import { Play, Settings } from "lucide-react";
+import { Play, Settings, Database } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
@@ -6,9 +6,11 @@ interface HeaderProps {
   onStartScan: () => void;
   onSettingsClick: () => void;
   isSettingsActive: boolean;
+  onIndexClick: () => void;
+  isIndexActive: boolean;
 }
 
-export default function Header({ isScanning, onStartScan, onSettingsClick, isSettingsActive }: HeaderProps) {
+export default function Header({ isScanning, onStartScan, onSettingsClick, isSettingsActive, onIndexClick, isIndexActive }: HeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -26,6 +28,14 @@ export default function Header({ isScanning, onStartScan, onSettingsClick, isSet
         >
           <Play size={14} className={isScanning ? "animate-spin" : ""} />
           {isScanning ? t("scanning") : t("incScan")}
+        </button>
+        <button 
+          className={`view-btn ${isIndexActive ? "active" : ""}`}
+          onClick={onIndexClick}
+          style={{ padding: "0.5rem" }}
+          title={t("tabAll")}
+        >
+          <Database size={18} />
         </button>
         <button 
           className={`view-btn ${isSettingsActive ? "active" : ""}`}

@@ -169,6 +169,8 @@ export default function App() {
         onStartScan={startScan}
         onSettingsClick={() => setActiveTab("settings")}
         isSettingsActive={activeTab === "settings"}
+        onIndexClick={() => setActiveTab("all")}
+        isIndexActive={activeTab === "all"}
       />
 
       {/* Tab Nav */}
