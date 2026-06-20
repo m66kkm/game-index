@@ -712,23 +712,28 @@ pub fn get_rating_stats(conn: &Connection) -> Result<Vec<RatingStat>> {
     let mut stmt = conn.prepare(
         "SELECT s.review_score_desc FROM games g 
          JOIN steam_cache s ON g.base_name = s.base_name 
-         WHERE g.is_representative = 1 AND s.review_score_desc IS NOT NULL AND s.review_score_desc != ''"
+         WHERE g.is_representative = 1"
     )?;
     
-    let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
+    let rows = stmt.query_map([], |row| row.get::<_, Option<String>>(0))?;
     
     let mut counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     
     for r in rows.flatten() {
-        let rating = r.trim().to_string();
-        if !rating.is_empty() 
-           && !rating.contains("篇用户评测") 
-           && !rating.contains("user reviews") 
-           && !rating.contains("Need more user reviews")
-           && !rating.contains("不需要测评") 
+        let rating = r.unwrap_or_default().trim().to_string();
+        
+        let final_rating = if rating.is_empty() 
+           || rating.contains("篇用户评测") 
+           || rating.contains("user reviews") 
+           || rating.contains("Need more user reviews")
+           || rating.contains("不需要测评") 
         {
-            *counts.entry(rating).or_insert(0) += 1;
-        }
+            "评价不可用".to_string()
+        } else {
+            rating
+        };
+        
+        *counts.entry(final_rating).or_insert(0) += 1;
     }
     
     let mut stats: Vec<RatingStat> = counts.into_iter().map(|(name, count)| RatingStat { name, count }).collect();
