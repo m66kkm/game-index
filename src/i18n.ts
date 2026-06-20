@@ -42,7 +42,7 @@ const resources = {
       "threads": "线程",
       
       "headerTitle": "游戏库索引控制台",
-      "headerSubtitle": "基于 Tauri 2 + SQLite 3 的本地化游戏盘库管理平台",
+      "headerSubtitle": "游戏仓鼠的炫耀空间",
       "scanning": "正在扫描...",
       "incScan": "增量盘库",
       "settingsBtn": "盘库设置",
