@@ -757,7 +757,15 @@ pub fn get_rating_stats(conn: &Connection) -> Result<Vec<RatingStat>> {
     }
     
     let mut stats: Vec<RatingStat> = counts.into_iter().map(|(name, count)| RatingStat { name, count }).collect();
-    stats.sort_by(|a, b| b.count.cmp(&a.count));
+    stats.sort_by(|a, b| {
+        if a.name == "评价不可用" && b.name != "评价不可用" {
+            std::cmp::Ordering::Greater
+        } else if a.name != "评价不可用" && b.name == "评价不可用" {
+            std::cmp::Ordering::Less
+        } else {
+            b.count.cmp(&a.count)
+        }
+    });
     
     Ok(stats)
 }
