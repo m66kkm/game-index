@@ -1,57 +1,59 @@
-# Game Index (独立游戏本地数字资产管理库)
+[English](README.md) | [简体中文](README_zh.md)
+
+# Game Index (Local Digital Game Asset Library)
 
 ![Hero Banner](assets/hero_banner.jpg)
 
-**Game Index** 是一款专为游戏收藏家打造的本地游戏资产管理工具。它能够扫描你硬盘中海量的独立游戏、ISO 镜像以及免安装整合包，自动清洗并匹配 Steam 官方接口，获取最原汁原味的官方中文名称、高清海报以及玩家评测，最终以一种极其现代化、高颜值的界面为你呈现。
+**Game Index** is a local game asset management tool tailored for game collectors. It scans your hard drives for massive numbers of indie games, ISO images, and pre-installed repacks, automatically cleans up and matches them with the official Steam API to obtain authentic official names, high-definition posters, and player reviews, presenting them in an extremely modern and highly aesthetic interface.
 
-## ✨ 核心特性 (Features)
+## ✨ Features
 
-- 🚀 **极速物理扫描**：毫秒级全盘扫描，自动过滤系统无用文件夹。
-- 🔍 **智能去重与版本合并**：自动识别完全相同的重复文件以及同一游戏的多个版本/DLC 整合包，帮你揪出硬盘空间杀手。
-- 🎮 **Steam 数据自动匹配**：精准请求 Steam API，自动获取正版中文译名、发售时间以及好评率，并且自动下载高清海报缓存到本地。
-- 🧩 **系列游戏关联**：智能识别“刺客信条”、“黑暗之魂”等游戏系列，自动归类为一个 Franchise 卡片。
-- 🎨 **顶级暗黑视觉美学**：精心设计的 Glassmorphism (毛玻璃) 风格，配以炫酷的霓虹赛博渐变光效，给你顶尖的数字展厅体验。
-- ⚙️ **高性能架构**：基于 Rust + Tauri 的轻量级后端系统，SQLite 闪电入库。
+- 🚀 **Ultra-Fast Physical Scanning**: Millisecond-level full-disk scanning with automatic filtering of useless system folders.
+- 🔍 **Smart Deduplication & Version Merging**: Automatically identifies exact duplicate files and multiple versions/DLC repacks of the same game, helping you find those hard drive space killers.
+- 🎮 **Automated Steam Data Matching**: Accurately requests the Steam API to automatically fetch official localized names, release dates, and user ratings, as well as caching high-definition posters locally.
+- 🧩 **Franchise Association**: Intelligently recognizes game series like "Assassin's Creed" or "Dark Souls" and automatically groups them into Franchise cards.
+- 🎨 **Premium Dark Visual Aesthetics**: Carefully designed Glassmorphism style paired with cool neon cyber gradient lighting effects, providing you with a top-tier digital showroom experience.
+- ⚙️ **High-Performance Architecture**: Built on a lightweight backend using Rust + Tauri, with lightning-fast SQLite storage.
 
-## 🛠️ 技术栈 (Tech Stack)
+## 🛠️ Tech Stack
 
-- **前端 UI**: React 18, TypeScript, Vite
-- **样式与设计**: Vanilla CSS (极简自定义的全局变量系统)
-- **后端引擎**: Rust, Tauri v1
-- **数据库**: SQLite (rusqlite)
-- **运行环境**: Bun
+- **Frontend UI**: React 18, TypeScript, Vite
+- **Styling & Design**: Vanilla CSS (Minimalist custom global variable system)
+- **Backend Engine**: Rust, Tauri v1
+- **Database**: SQLite (rusqlite)
+- **Runtime**: Bun
 
-## 📦 快速开始 (Getting Started)
+## 📦 Getting Started
 
-### 环境依赖
-- 安装 [Rust](https://www.rust-lang.org/tools/install) 和 Cargo
-- 安装 [Bun](https://bun.sh/) 
-- (仅 Windows 需要) 安装 C++ 生成工具 / Visual Studio
+### Prerequisites
+- Install [Rust](https://www.rust-lang.org/tools/install) and Cargo
+- Install [Bun](https://bun.sh/) 
+- (Windows only) Install C++ Build Tools / Visual Studio
 
-### 启动项目
+### Running the Project
 
 ```bash
-# 1. 克隆代码
-git clone https://github.com/your-username/game-index.git
+# 1. Clone the repository
+git clone https://github.com/m66kkm/game-index.git
 cd game-index
 
-# 2. 安装前端依赖
+# 2. Install frontend dependencies
 bun install
 
-# 3. 启动开发服务器 (前后端热更新)
+# 3. Start the dev server (with hot-reload for frontend and backend)
 bun run tauri:dev
 ```
 
-## 🏗️ 编译与打包 (Build & Deploy)
+## 🏗️ Build & Deploy
 
-本项目打包通过 Tauri 完成，支持跨平台。内置了便捷的 `deploy` 脚本：
+The project is packaged via Tauri and supports cross-platform builds. A convenient `deploy` script is built-in:
 
 ```bash
-# 执行此命令将会进行 Release 构建，并将打包好的安装程序自动拷贝到 target 目录下
+# Running this command will perform a Release build and automatically copy the installer to the target directory
 bun run deploy
 ```
-*注：编译完成后，你可以在根目录的 `target` 文件夹内找到 Windows NSIS 安装包 (`.exe`)*
+*Note: After the build is complete, you can find the Windows NSIS installer (`.exe`) in the `target` folder at the root directory.*
 
-## 📄 许可协议 (License)
+## 📄 License
 
-本项目采用 **AGPL-3.0 License** 开源协议 - 请参阅 [LICENSE](LICENSE) 文件了解详细信息。这意味着如果你修改或将其作为网络服务提供给其他人使用，你必须同样开源你的代码。
+This project is licensed under the **AGPL-3.0 License** - see the [LICENSE](LICENSE) file for details. This means if you modify it or provide it as a network service to others, you must also open source your code.
