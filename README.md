@@ -1,6 +1,6 @@
 [English](README.md) | [简体中文](README_zh.md)
 
-# Game Index (Local Digital Game Asset Library)
+# Game Index (A show-off space for gaming hoarders)
 
 **Game Index** is a local game asset management tool tailored for game collectors. It scans your hard drives for massive numbers of indie games, ISO images, and pre-installed repacks, automatically cleans up and matches them with the official Steam API to obtain authentic official names, high-definition posters, and player reviews, presenting them in an extremely modern and highly aesthetic interface.
 
