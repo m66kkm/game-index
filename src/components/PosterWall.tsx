@@ -1,4 +1,5 @@
 import type { Game } from "../types";
+import { useTranslation } from "react-i18next";
 import GameCard from "./GameCard";
 import GameDetailRow from "./GameDetailRow";
 
@@ -25,6 +26,8 @@ export default function PosterWall({
   copyPath,
   openGameFolder
 }: PosterWallProps) {
+  const { t } = useTranslation();
+
   const totalItems = games.length;
   const totalPages = Math.ceil(totalItems / pageSize) || 1;
   const paginatedGames = games.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -32,10 +35,10 @@ export default function PosterWall({
   const paginationControls = totalItems > 0 && (
     <div className="pagination" style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
       <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginRight: "0.5rem" }}>
-        共 {totalItems} 个结果
+        {t("paginationTotal", { total: totalItems })}
       </span>
       <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-        上一页
+        {t("btnPrevPage")}
       </button>
       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
         let pageNum = currentPage - 2 + i;
@@ -55,7 +58,7 @@ export default function PosterWall({
         );
       })}
       <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-        下一页
+        {t("btnNextPage")}
       </button>
     </div>
   );
@@ -98,10 +101,10 @@ export default function PosterWall({
       {/* Bottom Pagination Controls */}
       {totalItems > 0 && (
         <div className="results-info" style={{ marginTop: "1.5rem" }}>
-          <span>当前显示 {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalItems)} 个游戏，共 {totalItems} 个结果</span>
+          <span>{t("paginationInfo", { start: (currentPage - 1) * pageSize + 1, end: Math.min(currentPage * pageSize, totalItems), total: totalItems })}</span>
           <div className="pagination">
             <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-              上一页
+              {t("btnPrevPage")}
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum = currentPage - 2 + i;
@@ -121,7 +124,7 @@ export default function PosterWall({
               );
             })}
             <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-              下一页
+              {t("btnNextPage")}
             </button>
           </div>
         </div>
@@ -129,7 +132,7 @@ export default function PosterWall({
 
       {totalItems === 0 && (
         <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-secondary)", border: "1px dashed var(--panel-border)", borderRadius: "12px" }}>
-          没有找到符合过滤条件的游戏。
+          {t("noResults")}
         </div>
       )}
     </div>

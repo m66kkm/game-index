@@ -208,7 +208,8 @@ h1 {
   font-family: 'Outfit', sans-serif;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  position: relative;
 }
 
 .tab-btn:hover {
@@ -217,9 +218,7 @@ h1 {
 }
 
 .tab-btn.active {
-  background: var(--primary-accent);
   color: var(--bg-color);
-  box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
 }
 
 /* Controls / Filters Row */

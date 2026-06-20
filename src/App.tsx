@@ -15,8 +15,11 @@ import FranchisesPanel from "./components/FranchisesPanel";
 import FullIndexPanel from "./components/FullIndexPanel";
 import SettingsPanel from "./components/SettingsPanel";
 import Toast from "./components/Toast";
+import { useTranslation } from "react-i18next";
 
 export default function App() {
+  const { t } = useTranslation();
+
   // Navigation & View states
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [viewMode, setViewMode] = useState<"tile" | "detail">("tile");
@@ -44,6 +47,12 @@ export default function App() {
   
   const loggerRef = useRef<HTMLDivElement>(null);
 
+  const [genres, setGenres] = useState<string[]>([]);
+
+  useEffect(() => {
+    invoke<string[]>("get_all_genres_command").then(setGenres).catch(console.error);
+  }, []);
+
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 2500);
@@ -54,7 +63,7 @@ export default function App() {
     searchVal, driveVal, typeVal, sortVal
   });
 
-  const { scanPaths, loadScanPaths, addScanPath, removeScanPath, steamApiThreads, saveSteamApiThreads } = useSettings();
+  const { scanPaths, loadScanPaths, addScanPath, removeScanPath, steamApiThreads, saveSteamApiThreads, language, saveLanguage } = useSettings();
 
   // Load stats summary from DB
   const loadStats = useCallback(async () => {
@@ -84,10 +93,10 @@ export default function App() {
   }, [activeTab, loadGames, loadDuplicates, loadFranchises, loadStats]);
 
   const onScanComplete = useCallback(() => {
-    showToast("数据盘库扫描成功完成！");
+    showToast(t("scanCompleteToast") || "Data sync complete!");
     loadStats();
     loadTabData();
-  }, [showToast, loadStats, loadTabData]);
+  }, [showToast, loadStats, loadTabData, t]);
 
   const { isScanning, scanProgress, scanMessage, scanLogs, startScan, cancelScan, clearLogs } = useScan({
     onComplete: onScanComplete
@@ -116,21 +125,21 @@ export default function App() {
   const openGameFolder = useCallback(async (path: string) => {
     try {
       await invoke("open_game_folder_command", { path });
-      showToast("已在文件资源管理器中打开该路径");
+      showToast(t("toastFolderOpened") || "Opened in File Explorer");
     } catch (e) {
       console.error(e);
-      showToast("打开文件夹失败");
+      showToast(t("toastFolderFailed") || "Failed to open folder");
     }
-  }, [showToast]);
+  }, [showToast, t]);
 
   // Copy path to clipboard
   const copyPath = useCallback((path: string, gameName: string) => {
     navigator.clipboard.writeText(path).then(() => {
-      showToast(`已复制路径: ${gameName}`);
+      showToast(`${t("toastCopied") || "Copied path:"} ${gameName}`);
     }).catch(() => {
-      showToast("路径复制失败");
+      showToast(t("toastCopyFailed") || "Failed to copy path");
     });
-  }, [showToast]);
+  }, [showToast, t]);
 
   const toggleAccordion = useCallback((key: string) => {
     setOpenAccordions(prev => ({ ...prev, [key]: !prev[key] }));
@@ -147,6 +156,10 @@ export default function App() {
   const handleSaveSteamApiThreads = useCallback((threads: number) => {
     saveSteamApiThreads(threads, showToast);
   }, [saveSteamApiThreads, showToast]);
+
+  const handleSaveLanguage = useCallback((lang: string) => {
+    saveLanguage(lang, showToast);
+  }, [saveLanguage, showToast]);
 
   return (
     <div className="container">
@@ -175,6 +188,7 @@ export default function App() {
         viewMode={viewMode}
         setViewMode={setViewMode}
         scanPaths={scanPaths}
+        genres={genres}
       />
 
       {/* Scrollable Tab Content Area */}
@@ -183,7 +197,13 @@ export default function App() {
         {activeTab === "dashboard" && (
           <>
             <StatsGrid stats={stats} onCardClick={setActiveTab} />
-            <Dashboard scanPaths={scanPaths} />
+            <Dashboard 
+              scanPaths={scanPaths} 
+              onGenreClick={(genre) => {
+                setTypeVal(genre);
+                setActiveTab("posters");
+              }}
+            />
           </>
         )}
 
@@ -195,8 +215,8 @@ export default function App() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             pageSize={pageSize}
-            title={activeTab === "posters" ? "独立海报墙 (Poster Wall)" : "已安装游戏库"}
-            subtitle="点击卡片或详情列表，可直接在资源管理器中打开游戏目录。"
+            title={activeTab === "posters" ? t("wallTitlePosters") : t("wallTitleInstalled")}
+            subtitle={t("wallSubtitle")}
             copyPath={copyPath}
             openGameFolder={openGameFolder}
           />
@@ -251,6 +271,8 @@ export default function App() {
             steamApiThreads={steamApiThreads}
             saveSteamApiThreads={handleSaveSteamApiThreads}
             clearLogs={clearLogs}
+            language={language}
+            saveLanguage={handleSaveLanguage}
           />
         )}
       </div>

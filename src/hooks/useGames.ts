@@ -46,7 +46,7 @@ export function useGames({ searchVal, driveVal, typeVal, sortVal }: UseGamesPara
             const nameMatch = game.original_name.toLowerCase().includes(searchLower) ||
                               game.full_path.toLowerCase().includes(searchLower);
             const driveMatch = driveVal ? game.source_path === driveVal : true;
-            const typeMatch = typeVal ? game.type === typeVal : true;
+            const typeMatch = typeVal ? game.genres?.includes(typeVal) : true;
             return nameMatch && driveMatch && typeMatch;
           });
           return { ...group, games: filteredGames };
@@ -76,7 +76,7 @@ export function useGames({ searchVal, driveVal, typeVal, sortVal }: UseGamesPara
           const nameMatch = game.original_name.toLowerCase().includes(searchLower) ||
                             game.full_path.toLowerCase().includes(searchLower);
           const driveMatch = driveVal ? game.source_path === driveVal : true;
-          const typeMatch = typeVal ? game.type === typeVal : true;
+          const typeMatch = typeVal ? game.genres?.includes(typeVal) : true;
           return nameMatch && driveMatch && typeMatch;
         });
         return { ...group, games: filteredGames };

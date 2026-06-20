@@ -1,4 +1,5 @@
 import { Play, Settings } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
   isScanning: boolean;
@@ -8,11 +9,13 @@ interface HeaderProps {
 }
 
 export default function Header({ isScanning, onStartScan, onSettingsClick, isSettingsActive }: HeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <header>
       <div>
-        <h1>游戏库索引控制台</h1>
-        <div className="subtitle">基于 Tauri 2 + SQLite 3 的本地化游戏盘库管理平台</div>
+        <h1>{t("headerTitle")}</h1>
+        <div className="subtitle">{t("headerSubtitle")}</div>
       </div>
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         <button 
@@ -22,13 +25,13 @@ export default function Header({ isScanning, onStartScan, onSettingsClick, isSet
           style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}
         >
           <Play size={14} className={isScanning ? "animate-spin" : ""} />
-          {isScanning ? "正在扫描..." : "增量盘库"}
+          {isScanning ? t("scanning") : t("incScan")}
         </button>
         <button 
           className={`view-btn ${isSettingsActive ? "active" : ""}`}
           onClick={onSettingsClick}
           style={{ padding: "0.5rem" }}
-          title="盘库设置"
+          title={t("settingsBtn")}
         >
           <Settings size={18} />
         </button>

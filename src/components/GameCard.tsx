@@ -13,7 +13,7 @@ export default function GameCard({ game, onOpenFolder }: GameCardProps) {
     <div 
       className="poster-card" 
       onClick={() => onOpenFolder(game.full_path)}
-      title={`${game.original_name}\n类型: ${game.type}\n路径: ${game.full_path}\n大小: ${game.size}`}
+      title={`${game.original_name}\nSteam类型: ${game.genres || "未知"}\n文件类别: ${game.type}\n路径: ${game.full_path}\n大小: ${game.size}`}
     >
       {game.review_score_desc && (
         <div className={`rating-overlay ${getRatingColorClass(game.review_score_desc)}`}>

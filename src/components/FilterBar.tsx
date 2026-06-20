@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Search, LayoutGrid, List } from "lucide-react";
 
 interface FilterBarProps {
@@ -13,6 +14,7 @@ interface FilterBarProps {
   viewMode: "tile" | "detail";
   setViewMode: (mode: "tile" | "detail") => void;
   scanPaths: string[];
+  genres?: string[];
 }
 
 export default function FilterBar({
@@ -27,8 +29,11 @@ export default function FilterBar({
   setSortVal,
   viewMode,
   setViewMode,
-  scanPaths
+  scanPaths,
+  genres
 }: FilterBarProps) {
+  const { t } = useTranslation();
+
   if (activeTab === "dashboard" || activeTab === "settings") return null;
 
   return (
@@ -40,7 +45,7 @@ export default function FilterBar({
           value={searchVal}
           onChange={(e) => setSearchVal(e.target.value)}
           className="search-input"
-          placeholder="输入游戏名称、包名或存储路径进行全局搜索..."
+          placeholder={t("filterSearch")}
         />
       </div>
       <select
@@ -48,7 +53,7 @@ export default function FilterBar({
         onChange={(e) => setDriveVal(e.target.value)}
         className="filter-select"
       >
-        <option value="">所有盘符</option>
+        <option value="">{t("filterAllDrives")}</option>
         {scanPaths.map((p) => (
           <option key={p} value={p}>{p}</option>
         ))}
@@ -58,9 +63,10 @@ export default function FilterBar({
         onChange={(e) => setTypeVal(e.target.value)}
         className="filter-select"
       >
-        <option value="">所有类型</option>
-        <option value="Directory">Directory (文件夹)</option>
-        <option value="ISO">ISO (光盘镜像)</option>
+        <option value="">所有游戏类型</option>
+        {genres && genres.map((g) => (
+          <option key={g} value={g}>{g}</option>
+        ))}
       </select>
       
       {(activeTab === "posters" || activeTab === "installed" || activeTab === "all") && (
@@ -69,13 +75,13 @@ export default function FilterBar({
           onChange={(e) => setSortVal(e.target.value)}
           className="filter-select"
         >
-          <option value="">默认排序</option>
-          <option value="name-asc">文件名 (A-Z)</option>
-          <option value="name-desc">文件名 (Z-A)</option>
-          <option value="steam-desc">Steam评分 (高到低)</option>
-          <option value="steam-asc">Steam评分 (低到高)</option>
-          <option value="size-desc">游戏大小 (大到小)</option>
-          <option value="size-asc">游戏大小 (小到大)</option>
+          <option value="">{t("filterSortDefault")}</option>
+          <option value="name-asc">{t("filterSortNameAsc")}</option>
+          <option value="name-desc">{t("filterSortNameDesc")}</option>
+          <option value="steam-desc">{t("filterSortSteamDesc")}</option>
+          <option value="steam-asc">{t("filterSortSteamAsc")}</option>
+          <option value="size-desc">{t("filterSortSizeDesc")}</option>
+          <option value="size-asc">{t("filterSortSizeAsc")}</option>
         </select>
       )}
 

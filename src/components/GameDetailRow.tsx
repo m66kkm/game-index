@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
 import type { Game } from "../types";
 import { getRatingColorClass, getCoverUrl, getGradientsForName } from "../utils/helpers";
@@ -9,6 +10,8 @@ interface GameDetailRowProps {
 }
 
 export default function GameDetailRow({ game, onCopyPath, onOpenFolder }: GameDetailRowProps) {
+  const { t } = useTranslation();
+
   const cover = getCoverUrl(game.local_cover);
 
   return (
@@ -26,26 +29,27 @@ export default function GameDetailRow({ game, onCopyPath, onOpenFolder }: GameDe
         </div>
         <div className="detail-path-line">
           <span className={`badge ${game.type === "Directory" ? "badge-dir" : "badge-iso"}`}>{game.type}</span>
-          <span className="code-path" onClick={(e) => { e.stopPropagation(); onCopyPath(game.full_path, game.original_name); }} title="点击复制路径">{game.full_path}</span>
+          <span className="code-path" onClick={(e) => { e.stopPropagation(); onCopyPath(game.full_path, game.original_name); }} title={t("copyPathMsg")}>{game.full_path}</span>
         </div>
         <div className="detail-info-line">
-          <div className="detail-info-item">大小: <strong>{game.size}</strong></div>
-          <div className="detail-info-item">物理位置: <strong>{game.source_path}</strong></div>
+          <div className="detail-info-item">{t("sizeLabel")} <strong>{game.size}</strong></div>
+          <div className="detail-info-item">{t("physicalPathLabel")} <strong>{game.source_path}</strong></div>
+          {game.genres && <div className="detail-info-item">{t("genreLabel")} <strong style={{ color: "var(--accent)" }}>{game.genres}</strong></div>}
         </div>
       </div>
       <div className="detail-right-meta">
         {game.review_score_desc ? (
-          <span className={`rating-text ${getRatingColorClass(game.review_score_desc)}`} title={`Steam好评率: ${game.positive_percent}% / 总评论数: ${game.total_reviews}`}>
+          <span className={`rating-text ${getRatingColorClass(game.review_score_desc)}`} title={t("steamRatingHover", { percent: game.positive_percent, total: game.total_reviews })}>
             👍 {game.positive_percent}% ({game.review_score_desc})
           </span>
         ) : (
-          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", opacity: 0.5 }}>暂无评分</span>
+          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", opacity: 0.5 }}>{t("noRating")}</span>
         )}
-        <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>发行: <span style={{ color: "var(--text-primary)" }}>{game.release_date || "未知"}</span></div>
-        <div style={{ fontSize: "0.725rem", color: "var(--text-secondary)", opacity: 0.8 }}>创建: <span style={{ color: "var(--text-primary)" }}>{game.created || "未知"}</span></div>
+        <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{t("releaseLabel")} <span style={{ color: "var(--text-primary)" }}>{game.release_date || "未知"}</span></div>
+        <div style={{ fontSize: "0.725rem", color: "var(--text-secondary)", opacity: 0.8 }}>{t("createdLabel")} <span style={{ color: "var(--text-primary)" }}>{game.created || "未知"}</span></div>
       </div>
       <div style={{ marginLeft: "1rem", display: "flex", gap: "0.5rem" }} onClick={(e) => e.stopPropagation()}>
-        <button className="view-btn" onClick={() => onOpenFolder(game.full_path)} title="在资源管理器中打开" style={{ padding: "0.4rem" }}>
+        <button className="view-btn" onClick={() => onOpenFolder(game.full_path)} title={t("openInExplorer")} style={{ padding: "0.4rem" }}>
           <ExternalLink size={14} />
         </button>
       </div>

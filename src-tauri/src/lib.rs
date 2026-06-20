@@ -125,6 +125,24 @@ fn get_scan_history_command(state: tauri::State<'_, db::DbState>) -> Result<Vec<
 }
 
 #[tauri::command]
+fn clear_steam_cache_command(state: tauri::State<'_, db::DbState>) -> Result<(), String> {
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    db::clear_steam_cache(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn get_all_genres_command(state: tauri::State<'_, db::DbState>) -> Result<Vec<String>, String> {
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    db::get_all_genres(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn get_genre_stats_command(state: tauri::State<'_, db::DbState>) -> Result<Vec<db::GenreStat>, String> {
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    db::get_genre_stats(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn open_game_folder_command(path: String) -> Result<(), String> {
     use std::process::Command;
     Command::new("explorer")
@@ -198,6 +216,9 @@ pub fn run() {
             set_config_command,
             get_all_config_command,
             get_scan_history_command,
+            clear_steam_cache_command,
+            get_all_genres_command,
+            get_genre_stats_command,
         ])
         .run(tauri::generate_context!())
         .expect("运行 Tauri 应用时出错");

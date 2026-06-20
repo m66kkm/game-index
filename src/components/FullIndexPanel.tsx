@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
 import type { Game } from "../types";
 import { getRatingColorClass, getCoverUrl } from "../utils/helpers";
@@ -12,6 +13,8 @@ interface FullIndexPanelProps {
 }
 
 export default function FullIndexPanel({ games, currentPage, setCurrentPage, pageSize, copyPath, openGameFolder }: FullIndexPanelProps) {
+  const { t } = useTranslation();
+
   const totalItems = games.length;
   const totalPages = Math.ceil(totalItems / pageSize) || 1;
   const paginatedGames = games.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -19,10 +22,10 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
   const paginationControls = totalItems > 0 && (
     <div className="pagination" style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
       <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginRight: "0.5rem" }}>
-        共 {totalItems} 个结果
+        {t("paginationTotal", { total: totalItems })}
       </span>
       <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-        上一页
+        {t("btnPrevPage")}
       </button>
       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
         let pageNum = currentPage - 2 + i;
@@ -42,7 +45,7 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
         );
       })}
       <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-        下一页
+        {t("btnNextPage")}
       </button>
     </div>
   );
@@ -51,9 +54,9 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
     <div className="panel" style={{ display: "block" }}>
       <div className="panel-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <div>
-          <h2 style={{ margin: 0 }}>所有唯一游戏库索引</h2>
+          <h2 style={{ margin: 0 }}>{t("allTitle")}</h2>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", marginTop: "0.25rem", marginBottom: 0 }}>
-            完整展示盘库的每一个对象，支持无级排序和高级检索。
+            {t("allSubtitle")}
           </p>
         </div>
         {paginationControls}
@@ -63,13 +66,14 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
         <table>
           <thead>
             <tr>
-              <th style={{ width: "70px" }}>序号</th>
-              <th>游戏目录名称</th>
-              <th style={{ width: "160px" }}>Steam 评价</th>
-              <th style={{ width: "100px" }}>类型</th>
-              <th>存储盘路径</th>
-              <th style={{ width: "150px" }}>状态标记</th>
-              <th style={{ width: "80px", textAlign: "center" }}>操作</th>
+              <th style={{ width: "70px" }}>{t("colIndex")}</th>
+              <th>{t("colName")}</th>
+              <th style={{ width: "160px" }}>{t("colSteamRating")}</th>
+              <th style={{ width: "140px" }}>{t("colGenre")}</th>
+              <th style={{ width: "80px" }}>{t("colFile")}</th>
+              <th>{t("colPath")}</th>
+              <th style={{ width: "150px" }}>{t("colStatus")}</th>
+              <th style={{ width: "80px", textAlign: "center" }}>{t("colAction")}</th>
             </tr>
           </thead>
           <tbody>
@@ -96,18 +100,21 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
                     )}
                   </td>
                   <td>
+                    {game.genres ? <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{game.genres}</span> : <span style={{ color: "var(--text-secondary)", opacity: 0.3 }}>-</span>}
+                  </td>
+                  <td>
                     <span className={`badge ${game.type === "Directory" ? "badge-dir" : "badge-iso"}`}>{game.type}</span>
                   </td>
                   <td>
-                    <span className="code-path" onClick={() => openGameFolder(game.full_path)} title="在资源管理器中打开">{game.full_path}</span>
+                    <span className="code-path" onClick={() => openGameFolder(game.full_path)} title={t("openInExplorer")}>{game.full_path}</span>
                   </td>
                   <td>
-                    {game.is_exact_dup && <span className="badge badge-dup" style={{ marginRight: "0.35rem" }}>完全重复</span>}
-                    {game.is_version_dup && <span className="badge badge-ver">多版本</span>}
+                    {game.is_exact_dup && <span className="badge badge-dup" style={{ marginRight: "0.35rem" }}>{t("tagExactDup")}</span>}
+                    {game.is_version_dup && <span className="badge badge-ver">{t("tagVersionDup")}</span>}
                     {!game.is_exact_dup && !game.is_version_dup && <span style={{ color: "var(--text-secondary)", opacity: 0.3 }}>-</span>}
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    <button className="view-btn" onClick={() => openGameFolder(game.full_path)} title="在资源管理器中打开" style={{ padding: "0.4rem", display: "inline-flex" }}>
+                    <button className="view-btn" onClick={() => openGameFolder(game.full_path)} title={t("openInExplorer")} style={{ padding: "0.4rem", display: "inline-flex" }}>
                       <ExternalLink size={12} />
                     </button>
                   </td>
@@ -121,10 +128,10 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
       {/* Bottom Pagination Controls */}
       {totalItems > 0 && (
         <div className="results-info" style={{ marginTop: "1.5rem" }}>
-          <span>当前显示 {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalItems)} 个游戏，共 {totalItems} 个结果</span>
+          <span>{t("paginationInfo", { start: (currentPage - 1) * pageSize + 1, end: Math.min(currentPage * pageSize, totalItems), total: totalItems })}</span>
           <div className="pagination">
             <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-              上一页
+              {t("btnPrevPage")}
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum = currentPage - 2 + i;
@@ -144,7 +151,7 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
               );
             })}
             <button className="page-btn" onClick={() => setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-              下一页
+              {t("btnNextPage")}
             </button>
           </div>
         </div>
@@ -152,7 +159,7 @@ export default function FullIndexPanel({ games, currentPage, setCurrentPage, pag
 
       {totalItems === 0 && (
         <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-secondary)", border: "1px dashed var(--panel-border)", borderRadius: "12px" }}>
-          没有找到任何符合条件的游戏。
+          {t("noResults")}
         </div>
       )}
     </div>

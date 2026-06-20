@@ -22,6 +22,7 @@ export interface Game {
   positive_percent?: number;
   total_reviews?: number;
   release_date?: string;
+  genres?: string;
 }
 
 export interface DuplicateGroup {
@@ -40,6 +41,11 @@ export interface StatsSummary {
   franchise_count: number;
   exact_dups: number;
   version_dups: number;
+}
+
+export interface GenreStat {
+  name: string;
+  count: number;
 }
 
 export interface ProgressPayload {

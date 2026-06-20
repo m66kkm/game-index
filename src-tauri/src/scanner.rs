@@ -75,16 +75,17 @@ pub fn base_game_name(name: &str) -> String {
     clean.trim().to_string()
 }
 
+use jwalk::WalkDir;
+
 fn get_dir_size<P: AsRef<Path>>(path: P) -> u64 {
-    let mut size = 0;
-    if let Ok(entries) = fs::read_dir(path) {
-        for entry in entries.flatten() {
-            if let Ok(metadata) = entry.metadata() {
-                size += metadata.len(); // 只扫描第一层，不再递归以加快扫描速度
-            }
-        }
-    }
-    size
+    WalkDir::new(path)
+        .skip_hidden(false)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| !e.file_type().is_dir())
+        .filter_map(|e| e.metadata().ok())
+        .map(|m| m.len())
+        .sum()
 }
 
 fn format_size(bytes: u64) -> String {
@@ -152,6 +153,10 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
         .map_err(|e| e.to_string())?
         .and_then(|s| s.parse().ok())
         .unwrap_or(10);
+
+    let language = get_config(&conn, "language")
+        .map_err(|e| e.to_string())?
+        .unwrap_or_else(|| "schinese".to_string());
 
     let _ = app_handle.emit(
         "scan-progress",
@@ -260,6 +265,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                         positive_percent: None,
                         total_reviews: None,
                         release_date: None,
+                        genres: None,
                     });
                 }
             }
@@ -365,6 +371,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
             let cancel_clone = Arc::clone(&cancel_flag);
             let covers_dir_clone = Arc::clone(&covers_dir_arc);
             let client_clone = client.clone();
+            let lang = language.clone();
             
             std::thread::spawn(move || {
                 loop {
@@ -384,7 +391,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                             }
 
                             let encoded = urlencoding::encode(&base_name);
-                            let search_url = format!("https://store.steampowered.com/api/storesearch/?term={}&l=schinese&cc=CN", encoded);
+                            let search_url = format!("https://store.steampowered.com/api/storesearch/?term={}&l={}&cc=CN", encoded, lang);
 
                             let mut entry = SteamCacheEntry {
                                 base_name: base_name.clone(),
@@ -396,6 +403,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                                 total_reviews: None,
                                 release_date: None,
                                 last_updated: Some(chrono::Local::now().format("%Y-%m-%d %H:%M").to_string()),
+                                genres: None,
                             };
 
                             if let Ok(res) = client_clone.get(&search_url).send() {
@@ -466,7 +474,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                                                             entry.local_cover = Some(format!("covers/{}", cover_filename));
                                                         }
 
-                                                        let review_url = format!("https://store.steampowered.com/appreviews/{}?json=1&l=schinese", app_id);
+                                                        let review_url = format!("https://store.steampowered.com/appreviews/{}?json=1&l={}", app_id, lang);
                                                         if let Ok(review_res) = client_clone.get(&review_url).send().and_then(|r| r.json::<Value>()) {
                                                             if let Some(qs) = review_res.get("query_summary") {
                                                                 if let Some(total) = qs.get("total_reviews").and_then(|t| t.as_i64()) {
@@ -486,7 +494,7 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                                                             }
                                                         }
 
-                                                        let details_url = format!("https://store.steampowered.com/api/appdetails?appids={}&filters=basic,release_date&l=schinese&cc=CN", app_id);
+                                                        let details_url = format!("https://store.steampowered.com/api/appdetails?appids={}&filters=basic,release_date,genres&l={}&cc=CN", app_id, lang);
                                                         if let Ok(details_res) = client_clone.get(&details_url).send().and_then(|r| r.json::<Value>()) {
                                                             if let Some(data) = details_res.get(&app_id.to_string()).and_then(|app| app.get("data")) {
                                                                 if let Some(loc_name) = data.get("name").and_then(|n| n.as_str()) {
@@ -494,6 +502,14 @@ pub fn run_scan(app_handle: AppHandle, cancel_flag: Arc<AtomicBool>) -> Result<(
                                                                 }
                                                                 if let Some(date_val) = data.get("release_date").and_then(|rd| rd.get("date")) {
                                                                     entry.release_date = date_val.as_str().map(String::from);
+                                                                }
+                                                                if let Some(genres_array) = data.get("genres").and_then(|g| g.as_array()) {
+                                                                    let genres_str: Vec<String> = genres_array.iter()
+                                                                        .filter_map(|g| g.get("description").and_then(|d| d.as_str()).map(|s| s.to_string()))
+                                                                        .collect();
+                                                                    if !genres_str.is_empty() {
+                                                                        entry.genres = Some(genres_str.join(", "));
+                                                                    }
                                                                 }
                                                             }
                                                         }

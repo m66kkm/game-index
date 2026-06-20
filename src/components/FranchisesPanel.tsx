@@ -1,4 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { FranchiseGroup } from "../types";
 import { getRatingColorClass, getCoverUrl } from "../utils/helpers";
 
@@ -11,12 +13,14 @@ interface FranchisesPanelProps {
 }
 
 export default function FranchisesPanel({ franchises, openAccordions, toggleAccordion, copyPath, openGameFolder }: FranchisesPanelProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="panel" style={{ display: "block" }}>
       <div className="panel-header">
-        <h2>关联系列及续作分布</h2>
+        <h2>{t("franTitle")}</h2>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", marginTop: "0.25rem" }}>
-          聚合了相似前缀词根（如 Resident Evil / Assassins Creed）的系列作品。
+          {t("franSubtitle")}
         </p>
       </div>
 
@@ -26,28 +30,42 @@ export default function FranchisesPanel({ franchises, openAccordions, toggleAcco
           return (
             <div key={group.prefix} className={`accordion-item ${isOpen ? "open" : ""}`}>
               <div className="accordion-header" onClick={() => toggleAccordion(group.prefix)}>
-                <span>系列：{group.prefix}</span>
+                <span>{t("franGroup", { name: group.prefix, count: group.games.length })}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                  包含 {group.games.length} 个关联项
-                  <ChevronDown className="accordion-icon" size={16} />
+                  <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <ChevronDown className="accordion-icon" size={16} style={{ transform: "none" }} />
+                  </motion.div>
                 </span>
               </div>
-              <div className="accordion-content">
-                <div className="table-container" style={{ border: "none", borderRadius: 0 }}>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    style={{ overflow: "hidden", display: "block" }}
+                    className="accordion-content"
+                  >
+                    <div className="table-container" style={{ border: "none", borderRadius: 0 }}>
                   <table>
                     <thead>
                       <tr>
-                        <th>关联游戏目录名</th>
-                        <th style={{ width: "160px" }}>Steam 评价</th>
-                        <th style={{ width: "100px" }}>类型</th>
-                        <th>具体存储路径</th>
-                        <th style={{ width: "80px", textAlign: "center" }}>操作</th>
+                        <th>{t("colName")}</th>
+                        <th style={{ width: "160px" }}>{t("colSteamRating")}</th>
+                        <th style={{ width: "100px" }}>{t("colFile")}</th>
+                        <th>{t("colPath")}</th>
+                        <th style={{ width: "80px", textAlign: "center" }}>{t("colAction")}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {group.games.map((g) => (
                         <tr key={g.full_path}>
-                          <td style={{ fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                          <td 
+                            style={{ fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer" }} 
+                            onClick={() => openGameFolder(g.full_path)} 
+                            title={t("openInExplorer")}
+                          >
                             {g.local_cover ? (
                               <img src={getCoverUrl(g.local_cover) || ""} style={{ width: "32px", height: "48px", objectFit: "cover", borderRadius: "4px", border: "1px solid var(--panel-border)" }} alt="" />
                             ) : (
@@ -57,7 +75,7 @@ export default function FranchisesPanel({ franchises, openAccordions, toggleAcco
                           </td>
                           <td>
                             {g.review_score_desc ? (
-                              <span className={`rating-text ${getRatingColorClass(g.review_score_desc)}`} title={`好评率: ${g.positive_percent}% / 评论数: ${g.total_reviews}`}>
+                              <span className={`rating-text ${getRatingColorClass(g.review_score_desc)}`} title={t("steamRatingHover", { percent: g.positive_percent, total: g.total_reviews })}>
                                 👍 {g.positive_percent}% ({g.review_score_desc})
                               </span>
                             ) : (
@@ -68,10 +86,10 @@ export default function FranchisesPanel({ franchises, openAccordions, toggleAcco
                             <span className={`badge ${g.type === "Directory" ? "badge-dir" : "badge-iso"}`}>{g.type}</span>
                           </td>
                           <td>
-                            <span className="code-path" onClick={() => copyPath(g.full_path, g.original_name)} title="点击复制路径">{g.full_path}</span>
+                            <span className="code-path" onClick={() => copyPath(g.full_path, g.original_name)} title={t("copyPathMsg")}>{g.full_path}</span>
                           </td>
                           <td style={{ textAlign: "center" }}>
-                            <button className="view-btn" onClick={() => openGameFolder(g.full_path)} title="在资源管理器中打开" style={{ padding: "0.4rem", display: "inline-flex" }}>
+                            <button className="view-btn" onClick={() => openGameFolder(g.full_path)} title={t("openInExplorer")} style={{ padding: "0.4rem", display: "inline-flex" }}>
                               <ExternalLink size={12} />
                             </button>
                           </td>
@@ -80,14 +98,16 @@ export default function FranchisesPanel({ franchises, openAccordions, toggleAcco
                     </tbody>
                   </table>
                 </div>
-              </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
 
         {franchises.length === 0 && (
           <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-secondary)", border: "1px dashed var(--panel-border)", borderRadius: "12px" }}>
-            没有找到符合条件的系列游戏。
+            {t("noResults")}
           </div>
         )}
       </div>

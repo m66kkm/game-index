@@ -1,17 +1,97 @@
+import { useState, useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { useTranslation } from "react-i18next";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import type { GenreStat } from "../types";
+
 interface DashboardProps {
   scanPaths: string[];
+  onGenreClick?: (genre: string) => void;
 }
 
-export default function Dashboard({ scanPaths }: DashboardProps) {
+export default function Dashboard({ scanPaths, onGenreClick }: DashboardProps) {
+  const { t } = useTranslation();
+  const [genreStats, setGenreStats] = useState<GenreStat[]>([]);
+
+  useEffect(() => {
+    invoke<GenreStat[]>("get_genre_stats_command")
+      .then(setGenreStats)
+      .catch(console.error);
+  }, []);
+
   return (
     <div>
-      <div className="panel" style={{ borderTopColor: "var(--primary-accent)", display: "block" }}>
+      {genreStats.length > 0 && (
+        <div className="panel" style={{ display: "block", marginBottom: "1.5rem" }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "var(--primary-accent)", boxShadow: "0 0 10px var(--primary-accent)" }}></span>
+            {t("dashGenreTitle")}
+          </h3>
+          <p style={{ color: "var(--text-secondary)", marginBottom: "1.75rem", fontSize: "0.95rem" }}>
+            {t("dashGenreDesc")}
+          </p>
+          <div style={{ width: "100%", height: "300px" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={genreStats} margin={{ top: 5, right: 30, left: 0, bottom: 25 }}>
+                <XAxis 
+                  dataKey="name" 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fill: "var(--text-secondary)", fontSize: 12 }} 
+                  axisLine={{ stroke: "var(--panel-border)" }}
+                  tickLine={false}
+                  angle={-45}
+                  textAnchor="end"
+                />
+                <YAxis 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
+                  axisLine={false}
+                  tickLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(0, 242, 254, 0.05)' }}
+                  contentStyle={{ 
+                    backgroundColor: 'var(--panel-bg)', 
+                    borderColor: 'var(--panel-border)', 
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+                  }}
+                  itemStyle={{ color: 'var(--primary-accent)' }}
+                />
+                <Bar 
+                  dataKey="count" 
+                  radius={[4, 4, 0, 0]} 
+                  maxBarSize={50}
+                  onClick={(data) => {
+                    const genreName = data?.name || data?.payload?.name;
+                    if (onGenreClick && genreName) {
+                      onGenreClick(genreName);
+                    }
+                  }}
+                >
+                  {genreStats.map((_entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={index === 0 ? "var(--primary-accent)" : "rgba(0, 242, 254, 0.4)"} 
+                      style={{ cursor: "pointer" }}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      <div className="panel" style={{ borderTopColor: "var(--primary-accent)", display: "block", marginBottom: "1.5rem" }}>
         <h3 style={{ fontSize: "1.4rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "var(--primary-accent)", boxShadow: "0 0 10px var(--primary-accent)" }}></span>
-          盘库系统与存储概览
+          {t("dashTitle")}
         </h3>
         <p style={{ color: "var(--text-secondary)", marginBottom: "1.75rem", maxWidth: "800px", fontSize: "0.95rem" }}>
-          本地控制台支持实时读取 SQLite 3 数据库，动态管理扫描目录，支持 Windows 资源管理器级的文件直达操作。海报数据完全保存在本地，支持离线展示。
+          {t("dashSubtitle")}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.5rem" }}>
           {scanPaths.map((path) => (
@@ -20,7 +100,7 @@ export default function Dashboard({ scanPaths }: DashboardProps) {
                 <span>{path}</span>
               </div>
               <div style={{ color: "var(--text-secondary)", fontSize: "0.85rem", lineHeight: "1.5" }}>
-                自定义存储的盘库根目录。可随时在盘库设置中进行添加、删除。
+                {t("dashPathDesc")}
               </div>
             </div>
           ))}
@@ -28,20 +108,20 @@ export default function Dashboard({ scanPaths }: DashboardProps) {
       </div>
       
       <div className="panel" style={{ display: "block" }}>
-        <h3 style={{ fontSize: "1.4rem", fontWeight: 600, marginBottom: "1.25rem" }}>本地智能盘库指南</h3>
+        <h3 style={{ fontSize: "1.4rem", fontWeight: 600, marginBottom: "1.25rem" }}>{t("dashGuideTitle")}</h3>
         <div style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: "1.8" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
             <div>
-              <h4 style={{ color: "var(--primary-accent)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>🖼 离线海报墙与直达操作</h4>
-              <p style={{ fontSize: "0.875rem" }}>点击 <strong>"海报墙"</strong> 或 <strong>"已安装游戏"</strong> 体验本地化网格，点击卡片直接<strong>复制路径</strong>，海报大图加载非常流畅。更有详细模式一键打开本地文件夹。</p>
+              <h4 style={{ color: "var(--primary-accent)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>{t("dashGuide1Title")}</h4>
+              <p style={{ fontSize: "0.875rem" }}>{t("dashGuide1Desc")}</p>
             </div>
             <div>
-              <h4 style={{ color: "var(--danger-color)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>📁 清除完全重复文件</h4>
-              <p style={{ fontSize: "0.875rem" }}>完全相同的游戏在多处保存将浪费海量空间。通过 <strong>"完全重复"</strong> 页面能够极速识别冗余。通过文件路径定位能够轻松清理垃圾备份。</p>
+              <h4 style={{ color: "var(--danger-color)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>{t("dashGuide2Title")}</h4>
+              <p style={{ fontSize: "0.875rem" }}>{t("dashGuide2Desc")}</p>
             </div>
             <div>
-              <h4 style={{ color: "var(--warning-color)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>💿 版本与 repack 管理</h4>
-              <p style={{ fontSize: "0.875rem" }}>系统会自动对疑似版本重复的游戏目录进行分组（如 FitGirl 版、未加密版和更新档），帮助您根据需要决定保留哪个物理版本。</p>
+              <h4 style={{ color: "var(--warning-color)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "0.5rem" }}>{t("dashGuide3Title")}</h4>
+              <p style={{ fontSize: "0.875rem" }}>{t("dashGuide3Desc")}</p>
             </div>
           </div>
         </div>
