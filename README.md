@@ -2,7 +2,17 @@
 
 # Game Index (A show-off space for gaming hoarders)
 
-**Game Index** is a local game asset management tool tailored for game collectors. It scans your hard drives for massive numbers of indie games, ISO images, and pre-installed repacks, automatically cleans up and matches them with the official Steam API to obtain authentic official names, high-definition posters, and player reviews, presenting them in an extremely modern and highly aesthetic interface.
+<p align="center">
+  <img src="assets/app_logo.jpg" width="200" alt="App Logo" />
+</p>
+
+**Game Index** is more than just a local game manager—it's the ultimate weapon and private showroom tailored specifically for **"Gaming Hoarders"** (digital collectors who love hoarding massive amounts of indie games, ISO images, and pre-installed repacks).
+
+Tired of looking at messy folders named "fitgirl-repack", "XYZ-cracked", or "Portable-Version"? Game Index scans your hard drives at millisecond speeds, automatically cleans up those chaotic names, and intelligently matches them with the official Steam API. It automatically retrieves authentic official names, release dates, user ratings, and caches high-definition posters locally for offline viewing.
+
+Building a cyber-aesthetic, premium digital game showroom that you can't wait to show off to your friends has never been this easy!
+
+![Mascot](assets/mascot.jpg)
 
 ## ✨ Features
 
